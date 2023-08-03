@@ -34,7 +34,7 @@ final class AvaliadorTests: XCTestCase {
         leilao.propoe(lance: Lance(joao, 300.0))
         leilao.propoe(lance: Lance(jose, 400.0))
         
-        leiloeiro.avalia(leilao: leilao)
+        try? leiloeiro.avalia(leilao: leilao)
         
         XCTAssertEqual(250.0, leiloeiro.menorLance())
         XCTAssertEqual(400, leiloeiro.maiorLance())
@@ -44,7 +44,7 @@ final class AvaliadorTests: XCTestCase {
         let leilao = Leilao(descricao: "Playstation 5")
         leilao.propoe(lance: Lance(joao, 250.0))
         
-        leiloeiro.avalia(leilao: leilao)
+        try? leiloeiro.avalia(leilao: leilao)
         
         XCTAssertEqual(250.0, leiloeiro.menorLance())
         XCTAssertEqual(250.0, leiloeiro.maiorLance())
@@ -59,8 +59,7 @@ final class AvaliadorTests: XCTestCase {
             .lance(maria, 400.0)
             .constroi()
         
-        
-        leiloeiro.avalia(leilao: leilao)
+        try? leiloeiro.avalia(leilao: leilao)
         
         let listaDeLances = leiloeiro.tresMaiores()
         
@@ -68,5 +67,13 @@ final class AvaliadorTests: XCTestCase {
         XCTAssertEqual(700.0, listaDeLances[0].valor)
         XCTAssertEqual(400.0, listaDeLances[1].valor)
         XCTAssertEqual(300.0, listaDeLances[2].valor)
+    }
+    
+    func testDeveIgnorarLeilaoSemNenhumLance() {
+        let leilao = CriadorDeLeilao().para(descricao: "PlayStation 5").constroi()
+        
+        XCTAssertThrowsError(try leiloeiro.avalia(leilao: leilao), "Não é possivel avaliar um leilão sem lances") { error in
+            print(error.localizedDescription)
+        }
     }
 }
